@@ -1,0 +1,12 @@
+#OS junk files
+[Tt]humbs.db
+*.DS_Store
+*__pycache__
+
+#project files
+*.config
+# wav files
+*.wav
+
+# Office Temp Files
+~$*
