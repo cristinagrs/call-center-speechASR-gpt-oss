@@ -25,21 +25,24 @@ def main():
     uploaded_file, run_button, selected_model = navbar.make_sidebar(config)
 
     if uploaded_file and run_button:
+        do_diarization = True
+
         with st.spinner("Transcribing...", show_time=True):
             audio_file = upload_audio(uploaded_file) ## save file
             ####
             st.audio(audio_file)
             whisper_trans = speech_pipeline.get_transcription(
-                audio_file, model_type="Whisper", whisper_prompt=None)
-            processed_trans = ai_tools.post_process_trans(whisper_trans)
-            
-        # write transcription
+                audio_file, model_type="Oracle",#"Whisper", #
+                whisper_prompt=None, diarization=do_diarization, number_of_speakers=2)
+            processed_trans, speakers_list = ai_tools.post_process_trans(whisper_trans, diarization=do_diarization)
+
         st.header('SPEECH TRANSCRIPTION:')
         #st.divider()
-        # Scrollable box with HTML content
-        scrollable_box = display_widgets.get_scrollable_box(text=processed_trans)
-        st.markdown(scrollable_box, unsafe_allow_html=True)
-
+        if do_diarization:
+            transcription_display = display_widgets.display_transcription(speakers_list)
+        else:
+            transcription_display = display_widgets.get_scrollable_box(text=processed_trans)
+        st.markdown(transcription_display, unsafe_allow_html=True)
 
         with st.spinner("Getting LLM summary...", show_time=True):
             prompt = config.SUMMARIZE_PROMPT.format(

@@ -22,7 +22,7 @@ class SpeechPipeline:
         print(f"Upload complete to bucket complete.")
         return response
 
-    def get_transcription(self, audio_file, model_type, whisper_prompt=None):
+    def get_transcription(self, audio_file, model_type, whisper_prompt=None, diarization=True, number_of_speakers=None):
         object_name = os.path.join(self.config.BUCKET_FILE_PREFIX, os.path.basename(audio_file))
         _ = self.upload_file_to_object_storage(audio_file, object_name)
 
@@ -42,38 +42,30 @@ class SpeechPipeline:
             prefix = self.config.SPEECH_BUCKET_OUTPUT_PREFIX
         )
 
+        ## Speech Model and configuration:
+        model_config = oci.ai_speech.models.TranscriptionModelDetails()
+
         if model_type == "Oracle":
-            model_config = oci.ai_speech.models.TranscriptionModelDetails(
-                model_type = "ORACLE",
-                domain="GENERIC",
-                language_code="it-IT",
-            )
-        
-        elif whisper_prompt is None:
-            model_config = oci.ai_speech.models.TranscriptionModelDetails(
-                model_type="WHISPER_LARGE_V3T",
-                domain="GENERIC",
-                language_code="it", 
-                #transcription_settings=oci.ai_speech.models.TranscriptionSettings(
-                #    diarization=oci.ai_speech.models.Diarization(
-                #        is_diarization_enabled=False,
-                #    ),
-                    #additional_settings={
-                    #    "whisperPrompt": "<Sample Prompt Input>" # Only valid for Whisper models.
-                    #    }
-                #    )
-            )
+            model_config.model_type = "ORACLE"
+            model_config.domain="GENERIC"
+            model_config.language_code="en-US"
         else:
-            model_config = oci.ai_speech.models.TranscriptionModelDetails(
-                model_type="WHISPER_LARGE_V3T",
-                domain="GENERIC",
-                language_code="it", 
-                transcription_settings=oci.ai_speech.models.TranscriptionSettings(
-                    additional_settings={
-                        "whisperPrompt": whisper_prompt # Only valid for Whisper models.
-                    }
-                )
+            model_config.model_type = "WHISPER_LARGE_V3T"
+            model_config.domain="GENERIC"
+            model_config.language_code="en"
+        
+        transcription_settings = oci.ai_speech.models.TranscriptionSettings(
+            diarization=oci.ai_speech.models.Diarization(
+                is_diarization_enabled = diarization,
+                #number_of_speakers = number_of_speakers
             )
+        )
+        if model_type == 'Whisper' and whisper_prompt is not None:
+            transcription_settings.additional_settings = {
+                "whisperPrompt": whisper_prompt # Only valid for Whisper models.
+            }
+        
+        model_config.transcription_settings = transcription_settings
 
         ## Create transcription job
         transcription_job = self.client.create_transcription_job(
@@ -106,7 +98,6 @@ class SpeechPipeline:
         transcription_response = self.object_client.get_object(output_location.namespace_name, output_location.bucket_name, output_object_name)
         return transcription_response
     
-
 
 
 class GenAIPipeline:
@@ -149,11 +140,33 @@ class GenAIPipeline:
         return response.data.chat_response.choices[0].message.content[0].text
     
 
-def post_process_trans(transcription_response):
+def post_process_trans(transcription_response, diarization=True):
     object_content_bytes = transcription_response.data.content  # this is in bytes
     object_content_str = object_content_bytes.decode("utf-8")
 
     transcription_json = json.loads(object_content_str)
+    if diarization:
+        speakers_list = arrange_text_by_speaker(transcription_json["transcriptions"][0]["tokens"])
+    else:
+        speakers_list = []
     transcriptions = transcription_json.get("transcriptions", [])
     text_trans = "\n".join([trans['transcription'] for trans in transcriptions])
-    return text_trans
+    return text_trans, speakers_list
+
+def arrange_text_by_speaker(transcription_tokens):
+    speakers_list = []
+    current_speaker = transcription_tokens[0]["speakerIndex"]
+    current_dict = {"speaker_id": current_speaker, "speaker_text": ""}
+    for tok in transcription_tokens:
+        tok_speaker = tok["speakerIndex"]
+        tok_text = tok["token"]
+        if tok_speaker == current_speaker:
+            current_dict["speaker_text"] = current_dict["speaker_text"] + ' ' + tok_text
+        else:
+            #change of speaker
+            speakers_list.append(current_dict)
+            current_speaker = tok_speaker
+            current_dict = {"speaker_id": tok_speaker, "speaker_text": tok_text}
+
+    speakers_list.append(current_dict)
+    return speakers_list
