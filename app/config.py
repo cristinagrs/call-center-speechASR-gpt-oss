@@ -39,7 +39,6 @@ Rules:
 """
 
 SUMMARY_FORMAT = """
-# Summary:
 - **Calling reason:** specify why the user called.
 - **Issue was solved:** specify ONLY yes or no, whether the issue was solved.
 - **Information asked by the agent:** list the information the agent asked to complete the task.
