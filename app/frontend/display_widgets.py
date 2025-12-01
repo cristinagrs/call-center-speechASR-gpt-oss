@@ -49,7 +49,7 @@ def display_transcription(speakers_list):
                     border-radius: 10px;
                     max-width: 70%;
                     text-align: left;">
-                    <b>Speaker 0</b><br>{text}
+                    {text}
                 </div>
             """
             html += f'<div style="display:flex; justify-content:flex-start;">{bubble}</div>'
@@ -64,7 +64,7 @@ def display_transcription(speakers_list):
                     border-radius: 10px;
                     max-width: 70%;
                     text-align: right;">
-                    <b>Speaker 1</b><br>{text}
+                    {text}
                 </div>
             """
             html += f'<div style="display:flex; justify-content:flex-end;">{bubble}</div>'

@@ -57,7 +57,7 @@ class SpeechPipeline:
         transcription_settings = oci.ai_speech.models.TranscriptionSettings(
             diarization=oci.ai_speech.models.Diarization(
                 is_diarization_enabled = diarization,
-                #number_of_speakers = number_of_speakers
+                number_of_speakers = number_of_speakers
             )
         )
         if model_type == 'Whisper' and whisper_prompt is not None:

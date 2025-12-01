@@ -5,8 +5,6 @@
 
 #project files
 *.config
-# wav files
-*.wav
 
 # Office Temp Files
 ~$*
