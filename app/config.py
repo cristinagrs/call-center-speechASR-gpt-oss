@@ -19,28 +19,8 @@ SPEECH_BUCKET_OUTPUT_PREFIX = "speech_output"
 ORACLE_LOGO = "app_images/oracle_logo.png"
 UPLOAD_PATH = "uploaded_files"
 GENAI_MODELS = {
-    #"Meta Llama 3.3": "meta.llama-3.3-70b-instruct", 
-    #"Cohere Command-A": "cohere.command-a-03-2025", 
-    #"Cohere Command-R": "cohere.command-r-08-2024",
     "OpenAI GPT-OSS 120b": "openai.gpt-oss-120b",
     "OpenAI GPT-OSS 20b": "openai.gpt-oss-20b",
 
 }
 LIST_GENAI_MODELS = list(GENAI_MODELS.keys())
-
-SUMMARIZE_PROMPT = """
-Summarize the following conversation from a call center:
-{conversation}
-
-Rules:
-- DO NOT invent additional information, use only the information in the text
-- Give only the summary, in the following specific format:
-   {format}
-"""
-
-SUMMARY_FORMAT = """
-- **Calling reason:** specify why the user called.
-- **Issue was solved:** specify ONLY yes or no, whether the issue was solved.
-- **Information asked by the agent:** list the information the agent asked to complete the task.
-- **Small summary:** 2 line summary of the call.
-"""
