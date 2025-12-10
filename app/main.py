@@ -179,12 +179,10 @@ def process_batch(uploaded_files, selected_model):
         )
 
         # 3. LLM JSON summary
-        prompt = prompts.SUMMARIZE_PROMPT.format(
-            conversation=processed_trans, format=prompts.SUMMARY_FORMAT
-        )
+        prompt = prompts.SUMMARIZE_SYSTEM_PROMPT.format(format=prompts.SUMMARY_FORMAT)
         summary_json = genai_pipeline.get_chat_response(
-            prompts.SUMMARIZE_SYSTEM_PROMPT,
             prompt,
+            prompts.SUMMARIZE_PROMPT.format(conversation=processed_trans),
             model_id=config.GENAI_MODELS[selected_model],
         )
 
@@ -421,12 +419,12 @@ def render_batch_overview(results, selected_model):
 
         # 2) Categorization
         try:
-            prompt = prompts.CATEGORIZATION.format(
-                MESSAGE_BATCH=messages_info, format=prompts.CATEGORIZATION_FORMAT
+            prompt = prompts.CATEGORIZATION_SYSTEM.format(
+                format=prompts.CATEGORIZATION_FORMAT
             )
             categ_json = genai_pipeline.get_chat_response(
-                prompts.CATEGORIZATION_SYSTEM,
                 prompt,
+                prompts.CATEGORIZATION.format(MESSAGE_BATCH=messages_info),
                 model_id=config.GENAI_MODELS[selected_model],
             )
         except Exception as e:
@@ -453,17 +451,12 @@ def render_batch_overview(results, selected_model):
 
         # 3) Report generation
         try:
-            prompt_report = prompts.REPORT_GEN.format(
-                MESSAGE_BATCH=messages_info,
-                format=prompts.REPORT_GEN_FORMAT,
-            )
-
+            prompt = prompts.REPORT_GEN_SYSTEM.format(format=prompts.REPORT_GEN_FORMAT)
             report_obj = genai_pipeline.get_chat_response(
-                prompts.REPORT_GEN_SYSTEM,
-                prompt_report,
+                prompt,
+                prompts.REPORT_GEN.format(MESSAGE_BATCH=messages_info),
                 model_id=config.GENAI_MODELS[selected_model],
             )
-            # report_obj = json.loads(report_str)
         except Exception as e:
             st.warning(f"Could not generate report: {e}")
             report_obj = None

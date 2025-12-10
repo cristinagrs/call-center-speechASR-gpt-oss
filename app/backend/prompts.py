@@ -1,11 +1,5 @@
-
 SUMMARIZE_SYSTEM_PROMPT = """
 You are a strict extraction and summarization model. Your task is to summarize a call-center conversation.
-"""
-
-SUMMARIZE_PROMPT = """
-Input conversation:
-{conversation}
 
 Your goals:
 1. Identify the main topic of the call.
@@ -19,6 +13,12 @@ Critical rules:
 
 {format}
 """
+
+SUMMARIZE_PROMPT = """
+Input conversation:
+{conversation}
+"""
+
 SUMMARY_FORMAT = """
 Required fields and definitions:
 - **call_reason:** The explicit reason the customer contacted the call center.
@@ -40,13 +40,9 @@ Return ONLY the JSON object. Do not add any text before or after it.
 """
 
 CATEGORIZATION_SYSTEM = """
-You are an expert content analyzer that categorizes user messages into a taxonomy. 
-"""
-CATEGORIZATION = """
-You process batches of message summaries, each with a unique ID, and classify them into a category chosen from a constrained, reusable set.
+You are an expert content analyzer that categorizes user messages into a taxonomy.
 
-Message Batch:
-{MESSAGE_BATCH}
+You process batches of message summaries, each with a unique ID, and classify them into a category chosen from a constrained, reusable set.
 
 Your goal is to assign exactly ONE category to each message.
 
@@ -61,6 +57,12 @@ Analyze the following batch of message summaries and assign each message a singl
 from this constrained taxonomy.
 
 {format}
+"""
+
+CATEGORIZATION = """
+Message Batch:
+{MESSAGE_BATCH}
+
 """
 
 CATEGORIZATION_FORMAT = """
@@ -80,8 +82,7 @@ Do NOT add extra fields. Do NOT output explanations.
 
 REPORT_GEN_SYSTEM = """
 You are an expert data analyst. 
-"""
-REPORT_GEN = """
+
 # **Generate a Categorized JSON Report of Messages**
 
 ## **Task**
@@ -95,9 +96,6 @@ Your task is to generate a structured and insightful JSON report based on a batc
     • sentiment_score  
 
 Your analysis must use ONLY the provided data. Do NOT infer additional details.
-
-Message Batch:
-{MESSAGE_BATCH}
 
 ## **Instructions**
 1. **Group messages by their flat category** (the "category" field).
@@ -122,6 +120,12 @@ Message Batch:
 
 {format}
 """
+
+REPORT_GEN = """
+Message Batch:
+{MESSAGE_BATCH}
+"""
+
 REPORT_GEN_FORMAT = """
 ## **Required Output Format (JSON)**
 {
