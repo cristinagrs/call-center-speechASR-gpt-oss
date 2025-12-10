@@ -5,6 +5,8 @@
 
 #project files
 *.config
+gridspace-stanford-harper-valley*
+dataset*
 
 # Office Temp Files
 ~$*
