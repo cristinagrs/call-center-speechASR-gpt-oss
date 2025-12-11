@@ -61,10 +61,16 @@ Process:
    - Reason for the call
    - Solved/unsolved issue
    - Sentiment
+   - Information requested by the agent
+4. Batch Analytics & Reporting
+   - Calls are categorized automatically (e.g., Checkbook Request, Card Replacement, Money Transfer, etc.).
+   - Aggregated metrics such as sentiment averages, resolution rates, and category-level insights are visualized in a dashboard.
+   - Detailed per-category reports highlight trends, best/worst interactions, and operational improvement opportunities.
 
 # Useful documentation
 - [OCI Generative AI documentation](https://docs.oracle.com/en-us/iaas/Content/generative-ai/home.htm)
 - [OCI Speech documentation](https://docs.oracle.com/en-us/iaas/Content/speech/home.htm)
+- [OCI Python SDK documentation](https://docs.oracle.com/en-us/iaas/tools/python/latest/)
 
 # Authors
 - Yainuvis Socarras
